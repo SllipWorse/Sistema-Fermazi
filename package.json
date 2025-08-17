@@ -1,0 +1,22 @@
+{
+
+  "type": "module",
+
+  "dependencies": {
+
+    "node.fs": "^1.0.2",
+
+    "sqlite3": "^5.1.7"
+
+  },
+
+  "devDependencies": {
+
+    "@types/node": "^22.2.0"
+
+  }
+  
+}
+
+
+

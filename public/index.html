@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisa de Produtos com Lucro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+        .profit-bar input {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Pesquisa de Produtos com Lucro</h1>
+        
+        <div class="row mb-4">
+            <div class="input-field col s12 m3">
+                <input type="text" id="searchId" class="validate" oninput="filterProducts()">
+                <label for="searchId">ID do Produto</label>
+            </div>
+            <div class="input-field col s12 m3">
+                <input type="text" id="searchName" class="validate" oninput="filterProducts()">
+                <label for="searchName">Nome do Produto</label>
+            </div>
+            <div class="input-field col s12 m3">
+                <input type="number" id="searchPrice" class="validate" oninput="filterProducts()">
+                <label for="searchPrice">Preço Máximo</label>
+            </div>
+            <div class="input-field col s12 m3">
+                <button class="btn waves-effect waves-light" onclick="filterProducts()">Buscar</button>
+            </div>
+        </div>
+
+        <div class="row mb-4 profit-bar">
+            <div class="input-field col s12 m9">
+                <input type="number" id="profitPercent" class="validate" oninput="updateProfit()">
+                <label for="profitPercent">Percentual de Lucro</label>
+            </div>
+            <div class="input-field col s12 m3">
+                <button class="btn waves-effect waves-light" onclick="updateProfit()">Aplicar Lucro</button>
+            </div>
+        </div>
+
+        <table class="highlight">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Tipo</th>
+                    <th>Preço com Lucro</th>
+                </tr>
+            </thead>
+            <tbody id="productsTable"></tbody>
+        </table>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        async function fetchProducts(queryParams = '') {
+            const response = await fetch(`/api/products${queryParams}`);
+            if (!response.ok) {
+                console.error('Erro ao buscar produtos');
+                return [];
+            }
+            return response.json();
+        }
+
+        async function displayProducts(profitPercent = 0) {
+            const searchId = document.getElementById('searchId').value;
+            const searchName = document.getElementById('searchName').value;
+            const searchPrice = parseFloat(document.getElementById('searchPrice').value);
+
+            const queryParams = new URLSearchParams();
+            if (searchId) queryParams.append('id', searchId);
+            if (searchName) queryParams.append('name', searchName);
+            if (searchPrice) queryParams.append('price', searchPrice);
+
+            const products = await fetchProducts(queryParams.toString());
+
+            const tbody = document.querySelector('#productsTable');
+            tbody.innerHTML = '';
+
+            products.forEach(product => {
+                const profitPrice = product.price * (1 + profitPercent / 100);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.id}</td>
+                    <td>${product.name}</td>
+                    <td>${product.price.toFixed(2)}</td>
+                    <td>${product.type}</td>
+                    <td>${profitPrice.toFixed(2)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterProducts() {
+            displayProducts(getProfitPercent());
+        }
+
+        function updateProfit() {
+            displayProducts(getProfitPercent());
+        }
+
+        function getProfitPercent() {
+            return parseFloat(document.getElementById('profitPercent').value) || 0;
+        }
+
+        window.onload = () => displayProducts();
+    </script>
+</body>
+</html>
