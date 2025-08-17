@@ -1,9 +1,0 @@
-- [x] ler o arquivo e printar na tela
-- [x] manipular os dados do LOJISTA.txt e printar somente o que queremos
-- [x] estruturar os dados em atributos separados: id, name, qty, price, type
-- [x] instalou sqlite3
-- [x] criou uma conexao com a banco de dados
-- [x] inserir os dados do lojista.txt no banco de dados
-- [x] selecionar dados usando SQL
-- [x] desenhar uma interface web para manipular os produtos
-- [ ] migrar do sqlite3 para o local storage do navegador com json
